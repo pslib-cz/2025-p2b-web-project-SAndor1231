@@ -1,2 +1,2 @@
-https://www.figma.com/site/xBuiU30Oekj9Rp21oXw85W/Untitled?node-id=0-1&t=CrAZ4jC1Vkv23ejt-1
+https://www.figma.com/design/SHuDuYDVq4As0IDB3B2AvN/Untitled?node-id=2-53&m=dev&t=biAtWtOcd51Tmsw4-1
 https://pslib-cz.github.io/2025-p2b-web-project-SAndor1231/
