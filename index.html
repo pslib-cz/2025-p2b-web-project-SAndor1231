@@ -4,11 +4,749 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mythical Menagerie</title>
+    <title>Mythical Creatures E-Shop</title>
+
+    <!-- Typography Strategy -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Work+Sans:wght@400;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Strategy -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Design System Tokens */
+        :root {
+            --color-bg: #ffffff;
+            --color-text: #0a0a0a;
+            --color-accent: #ff2d78;
+            --color-surface: #f4f4f4;
+            --color-border: #e0e0e0;
+
+            --font-display: 'Cinzel', serif;
+            --font-body: 'Work Sans', sans-serif;
+
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 4rem;
+
+            --border-thin: 1px solid var(--color-border);
+        }
+
+        /* Base Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Mobile First Base */
+        body {
+            font-family: var(--font-body);
+            color: var(--color-text);
+            background: var(--color-bg);
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Atmosphere Effects */
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 15% 25%, rgba(255, 45, 120, 0.04) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(10, 10, 10, 0.03) 0%, transparent 45%);
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.06;
+            filter: url(#noiseFilter);
+            mix-blend-mode: multiply;
+        }
+
+        /* Typography */
+        h1,
+        h2,
+        h3,
+        .display {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* Global Navigation */
+        nav {
+            padding: var(--space-sm) var(--space-md);
+            border-bottom: var(--border-thin);
+            position: relative;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: var(--space-sm);
+        }
+
+        .logo {
+            width: 48px;
+            height: 24px;
+            background-color: var(--color-text);
+            border-radius: 50%;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .search-bar {
+            background-color: var(--color-accent);
+            border: none;
+            border-radius: 9999px;
+            padding: 0.5rem 1.5rem;
+            color: #fff;
+            font-family: var(--font-body);
+            width: 100%;
+            max-width: 250px;
+            outline: none;
+        }
+
+        .search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            border-top: var(--border-thin);
+            padding-top: var(--space-sm);
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--color-text);
+            font-size: 0.9rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .nav-links a.active,
+        .nav-links a:hover {
+            border-bottom-color: var(--color-text);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        @media (max-width: 767px) {
+            .nav-top {
+                flex-wrap: wrap;
+                gap: var(--space-sm);
+            }
+
+            .search-wrapper {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                max-width: none;
+            }
+
+            .search-bar {
+                max-width: 100%;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+                gap: var(--space-sm);
+                display: none;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+                order: 2;
+            }
+        }
+
+        /* Single Page App Toggling */
+        .page-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Breadcrumb Strategy */
+        .breadcrumb-band {
+            background-color: var(--color-surface);
+            padding: var(--space-sm) var(--space-md);
+            border-bottom: var(--border-thin);
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        /* Skeleton Structure */
+        .container {
+            padding: var(--space-md);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Component: Cards */
+        .card {
+            border: var(--border-thin);
+            background: var(--color-bg);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .card:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 0 30px rgba(255, 45, 120, 0.12);
+            transform: translateY(-2px);
+            z-index: 2;
+        }
+
+        .card img {
+            width: 100%;
+            object-fit: cover;
+            border-bottom: var(--border-thin);
+            display: block;
+        }
+
+        .card-content {
+            padding: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-content hr {
+            border: none;
+            border-top: var(--border-thin);
+            margin: var(--space-md) 0;
+        }
+
+        /* Layout: Home Page */
+        .section-title {
+            text-align: center;
+            margin: var(--space-lg) 0;
+            font-size: 2.5rem;
+        }
+
+        .home-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-md);
+        }
+
+        @media (min-width: 1024px) {
+            .home-grid {
+                grid-template-columns: 60% 1fr;
+            }
+        }
+
+        .home-grid .card-large img {
+            height: 400px;
+        }
+
+        .home-grid .card-small img {
+            height: 250px;
+        }
+
+        /* Layout: Shop Page */
+        .shop-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-md);
+        }
+
+        @media (min-width: 1024px) {
+            .shop-layout {
+                grid-template-columns: 220px 1fr;
+            }
+        }
+
+        /* Shop: Sidebar Filter */
+        .sidebar {
+            display: none;
+        }
+
+        .sidebar.open {
+            display: block;
+            margin-bottom: var(--space-md);
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                display: block;
+                border-right: var(--border-thin);
+                padding-right: var(--space-md);
+            }
+        }
+
+        .mobile-filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: var(--border-thin);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: var(--font-body);
+            margin-bottom: var(--space-sm);
+        }
+
+        @media (min-width: 1024px) {
+            .mobile-filter-btn {
+                display: none;
+            }
+        }
+
+        .filter-group {
+            margin-bottom: var(--space-md);
+        }
+
+        .filter-group-label {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .filter-item input {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--color-text);
+            border-radius: 0;
+            cursor: pointer;
+        }
+
+        .filter-item input:checked {
+            background: var(--color-text);
+        }
+
+        .sidebar hr {
+            border: none;
+            border-top: var(--border-thin);
+            margin: var(--space-md) 0;
+        }
+
+        /* Shop: Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-md);
+        }
+
+        @media (min-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .product-img-container {
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            border-bottom: var(--border-thin);
+        }
+
+        .product-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+            border-bottom: none;
+        }
+
+        .card:hover .product-img-container img {
+            transform: scale(1.03);
+        }
+
+        .product-info {
+            padding: var(--space-sm);
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .product-desc {
+            font-size: 0.85rem;
+            color: #444;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: var(--space-sm);
+            flex-grow: 1;
+        }
+
+        .product-price {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-lg);
+            font-size: 1rem;
+        }
+
+        .pagination span {
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .pagination span.active {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+    </style>
 </head>
 
 <body>
 
+    <!-- Atmosphere Filters -->
+    <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
+        <filter id="noiseFilter">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
+        </filter>
+    </svg>
+
+    <div class="bg-mesh"></div>
+    <div class="noise-overlay"></div>
+
+    <!-- Global Nav -->
+    <nav>
+        <div class="nav-top">
+            <div class="logo"></div>
+            <div class="search-wrapper">
+                <input type="search" class="search-bar" placeholder="Search mythical beings...">
+            </div>
+            <button class="menu-toggle" onclick="document.getElementById('nav-links').classList.toggle('open')">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+        <div class="nav-links" id="nav-links">
+            <a onclick="navTo('home')" class="active" id="link-home">Home</a>
+            <a onclick="navTo('shop')" id="link-shop">Shop</a>
+            <a onclick="navTo('this')" id="link-this">This</a>
+            <a onclick="navTo('that')" id="link-that">That</a>
+            <a onclick="navTo('there')" id="link-there">There</a>
+            <a onclick="navTo('about')" id="link-about">About</a>
+        </div>
+    </nav>
+
+    <!-- HOME PAGE -->
+    <main id="page-home" class="page-section active">
+        <div class="breadcrumb-band">/Home</div>
+        <div class="container">
+            <h1 class="section-title display">Co nabízíme</h1>
+            <div class="home-grid">
+                <article class="card card-large">
+                    <img src="https://source.unsplash.com/featured/?mythical,creature" alt="Beings of Legend">
+                    <div class="card-content">
+                        <h2 class="display">Beings of Legend</h2>
+                        <p>Step into a realm where myths breathe and legends walk. We offer a curated selection of the
+                            most extraordinary creatures across all dimensions, elements, and ancient lineages. From the
+                            untamed skies to the abyssal depths, our companions are bound by ancient magic and supreme
+                            care.</p>
+                        <hr>
+                        <p style="font-size: 0.85rem; color: #555;">Find your lifelong mythical companion today.</p>
+                    </div>
+                </article>
+                <article class="card card-small">
+                    <img src="https://source.unsplash.com/featured/?magic,fantasy" alt="Magical Realm">
+                    <div class="card-content">
+                        <h3 class="display" style="font-size: 1.2rem;">Unmatched Rarity</h3>
+                        <p
+                            style="font-size: 0.9rem; margin-top: 0.5rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;">
+                            Every entity in our care is sourced ethically from their natural mystical habitats. We
+                            guarantee authentic lineages, pristine elemental affinities, and a deep magical bond that
+                            will resonate with your soul.
+                        </p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- SHOP PAGE -->
+    <main id="page-shop" class="page-section">
+        <div class="breadcrumb-band">/Shop</div>
+        <div class="container">
+            <button class="mobile-filter-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+                <i data-lucide="sliders-horizontal" style="width: 16px;"></i> Filters
+            </button>
+            <div class="shop-layout">
+                <!-- Shop Filters -->
+                <aside class="sidebar" id="sidebar">
+                    <div class="filter-group">
+                        <div class="filter-group-label">Kategorie 1</div>
+                        <label class="filter-item"><input type="radio" name="kategorie1"> Muž</label>
+                        <label class="filter-item"><input type="radio" name="kategorie1"> Žena</label>
+                        <label class="filter-item"><input type="radio" name="kategorie1"> Unisex</label>
+                        <label class="filter-item"><input type="radio" name="kategorie1"> Random</label>
+                    </div>
+                    <hr>
+                    <div class="filter-group">
+                        <div class="filter-group-label">Kategorie 2</div>
+                        <label class="filter-item"><input type="radio" name="kategorie2"> Muž</label>
+                        <label class="filter-item"><input type="radio" name="kategorie2"> Žena</label>
+                        <label class="filter-item"><input type="radio" name="kategorie2"> Unisex</label>
+                        <label class="filter-item"><input type="radio" name="kategorie2"> Random</label>
+                    </div>
+                    <hr>
+                    <div class="filter-group">
+                        <div class="filter-group-label">Kategorie 3</div>
+                        <label class="filter-item"><input type="radio" name="kategorie3"> Muž</label>
+                        <label class="filter-item"><input type="radio" name="kategorie3"> Žena</label>
+                        <label class="filter-item"><input type="radio" name="kategorie3"> Unisex</label>
+                        <label class="filter-item"><input type="radio" name="kategorie3"> Random</label>
+                    </div>
+                </aside>
+
+                <!-- Shop Products -->
+                <div class="product-grid">
+                    <article class="card">
+                        <div class="product-img-container">
+                            <img src="https://source.unsplash.com/featured/?unicorn" alt="Unicorn">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title display">Silver Unicorn</h3>
+                            <p class="product-desc">Pure magical being of the enchanted forest. Requires a diet of
+                                starlight and pure spring water.</p>
+                            <div class="product-price">Cena: 67.00 Kč</div>
+                        </div>
+                    </article>
+                    <article class="card">
+                        <div class="product-img-container">
+                            <img src="https://source.unsplash.com/featured/?kraken" alt="Kraken">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title display">Abyssal Kraken</h3>
+                            <p class="product-desc">Colossal cephalopod for ocean guardians. Ensure you have adequate
+                                marine space before purchase.</p>
+                            <div class="product-price">Cena: 890.00 Kč</div>
+                        </div>
+                    </article>
+                    <article class="card">
+                        <div class="product-img-container">
+                            <img src="https://source.unsplash.com/featured/?griffin" alt="Griffin">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title display">Royal Griffin</h3>
+                            <p class="product-desc">Half lion, half eagle. The perfect noble steed for surveying your
+                                mountainous domain.</p>
+                            <div class="product-price">Cena: 450.00 Kč</div>
+                        </div>
+                    </article>
+                    <article class="card">
+                        <div class="product-img-container">
+                            <img src="https://source.unsplash.com/featured/?cerberus" alt="Cerberus">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title display">Cerberus Pup</h3>
+                            <p class="product-desc">Three heads, one loyal heart. Excellent guard dog for underworld
+                                entrances or suburban homes.</p>
+                            <div class="product-price">Cena: 120.00 Kč</div>
+                        </div>
+                    </article>
+                    <article class="card">
+                        <div class="product-img-container">
+                            <img src="https://source.unsplash.com/featured/?chimera" alt="Chimera">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title display">Bronze Chimera</h3>
+                            <p class="product-desc">A fiery amalgamation of beasts. Highly territorial, recommended for
+                                experienced handlers only.</p>
+                            <div class="product-price">Cena: 330.00 Kč</div>
+                        </div>
+                    </article>
+                    <article class="card">
+                        <div class="product-img-container">
+                            <img src="https://source.unsplash.com/featured/?basilisk" alt="Basilisk">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title display">Emerald Basilisk</h3>
+                            <p class="product-desc">A serpent king whose gaze is legendary. Comes with a complimentary
+                                set of mirrored eyewear.</p>
+                            <div class="product-price">Cena: 67.00 Kč</div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Shop Pagination -->
+                <div class="pagination">
+                    <span class="active">1</span>
+                    <span>2</span>
+                    <span>…</span>
+                    <span>10</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- THIS PAGE -->
+    <main id="page-this" class="page-section">
+        <div class="breadcrumb-band">/This</div>
+        <div class="container">
+            <article class="card">
+                <div class="card-content">
+                    <h2 class="display">This Page</h2>
+                    <p>Placeholder content for the "This" section.</p>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <!-- THAT PAGE -->
+    <main id="page-that" class="page-section">
+        <div class="breadcrumb-band">/That</div>
+        <div class="container">
+            <article class="card">
+                <div class="card-content">
+                    <h2 class="display">That Page</h2>
+                    <p>Placeholder content for the "That" section.</p>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <!-- THERE PAGE -->
+    <main id="page-there" class="page-section">
+        <div class="breadcrumb-band">/There</div>
+        <div class="container">
+            <article class="card">
+                <div class="card-content">
+                    <h2 class="display">There Page</h2>
+                    <p>Placeholder content for the "There" section.</p>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <!-- ABOUT PAGE -->
+    <main id="page-about" class="page-section">
+        <div class="breadcrumb-band">/About</div>
+        <div class="container">
+            <div class="home-grid" style="grid-template-columns: 1fr;">
+                <article class="card card-large">
+                    <img src="https://source.unsplash.com/featured/?mythical" alt="Mythical Realm"
+                        style="height: 500px;">
+                    <div class="card-content">
+                        <h2 class="display">About Our Bestiary</h2>
+                        <p>Founded in the primordial age, our bestiary has been the premier provider of mythical and
+                            legendary companions across the realms. We believe that the bond between a mortal and a
+                            magical being transcends time.</p>
+                        <p style="margin-top: 1rem;">Our facilities span across dimensions, ensuring that every
+                            creature—from the smallest pixie to the most colossal leviathan—is raised in environments
+                            that perfectly mimic their natural, magical habitats. We work closely with druids, magi, and
+                            mythical handlers to guarantee the well-being of all our entities.</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- Interaction Scripts -->
+    <script>
+        lucide.createIcons();
+
+        function navTo(pageId) {
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) targetPage.classList.add('active');
+
+            const targetLink = document.getElementById('link-' + pageId);
+            if (targetLink) targetLink.classList.add('active');
+
+            const navLinks = document.getElementById('nav-links');
+            if (navLinks.classList.contains('open')) {
+                navLinks.classList.remove('open');
+            }
+        }
+    </script>
 </body>
 
 </html>
