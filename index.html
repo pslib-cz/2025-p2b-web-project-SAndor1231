@@ -14,6 +14,18 @@
 
     <!-- Icon Strategy -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="images/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="images/favicon_io/site.webmanifest">
+
+    <!-- LightGallery -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2/css/lg-zoom.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2/css/lg-thumbnail.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@2/lightgallery.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@2/plugins/zoom/lg-zoom.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@2/plugins/thumbnail/lg-thumbnail.umd.min.js"></script>
 
     <style>
         /* Design System Tokens */
@@ -94,30 +106,33 @@
         nav {
             padding: var(--space-sm) var(--space-md);
             border-bottom: var(--border-thin);
-            position: relative;
-            z-index: 100;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
-        }
-
-        .nav-top {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding-bottom: var(--space-sm);
+            justify-content: space-between;
+            gap: var(--space-md);
         }
 
-        .logo {
-            width: 48px;
-            height: 24px;
-            background-color: var(--color-text);
+        .nav-logo {
+            flex-shrink: 0;
+        }
+
+        .nav-logo img {
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
+            object-fit: cover;
+            display: block;
         }
 
         .search-wrapper {
-            flex: 1;
             display: flex;
             justify-content: flex-end;
+            flex-shrink: 0;
         }
 
         .search-bar {
@@ -140,9 +155,8 @@
             display: flex;
             justify-content: center;
             gap: var(--space-md);
-            border-top: var(--border-thin);
-            padding-top: var(--space-sm);
             transition: max-height 0.3s ease;
+            flex: 1;
         }
 
         .nav-links a {
@@ -168,9 +182,8 @@
         }
 
         @media (max-width: 767px) {
-            .nav-top {
+            nav {
                 flex-wrap: wrap;
-                gap: var(--space-sm);
             }
 
             .search-wrapper {
@@ -256,11 +269,37 @@
             z-index: 2;
         }
 
-        .card img {
-            width: 100%;
-            object-fit: cover;
-            border-bottom: var(--border-thin);
+        /* ============================================
+        /GLOBAL IMAGE FIT — applies to every <img>
+        ============================================ */
+        img {
             display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+        }
+
+        /* Universal image wrapper */
+        .img-wrapper {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+
+        /* Forces img to fill wrapper regardless of orientation */
+        .img-wrapper img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 300ms ease, filter 300ms ease;
+        }
+
+        .img-wrapper:hover img {
+            transform: scale(1.05);
+            filter: brightness(0.7);
         }
 
         .card-content {
@@ -295,12 +334,34 @@
             }
         }
 
-        .home-grid .card-large img {
-            height: 400px;
+        /* Home featured cards — fixed height layout */
+        .home-grid .img-wrapper {
+            height: 280px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .home-grid .card-small img {
-            height: 250px;
+        .home-grid .img-wrapper img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .home-grid .card-content h2,
+        .home-grid .card-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: var(--space-xs);
+        }
+
+        .home-grid .card-content p {
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
 
         /* Layout: Shop Page */
@@ -414,19 +475,24 @@
         .product-img-container {
             aspect-ratio: 4 / 3;
             overflow: hidden;
+            position: relative;
+            width: 100%;
             border-bottom: var(--border-thin);
         }
 
         .product-img-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
+            transition: transform 0.4s ease, filter 0.4s ease;
             border-bottom: none;
         }
 
         .card:hover .product-img-container img {
-            transform: scale(1.03);
+            transform: scale(1.05);
+            filter: brightness(0.8);
         }
 
         .product-info {
@@ -475,6 +541,64 @@
             text-decoration: underline;
             text-underline-offset: 4px;
         }
+
+        /* ============================================
+        /   GALLERY SECTION (About page)
+        ============================================ */
+        .gallery-section {
+            margin-top: var(--space-lg);
+        }
+
+        .gallery-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .creature-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .creature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .creature-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .creature-grid a {
+            display: block;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* LightGallery toolbar overrides */
+        .lg-toolbar {
+            background-color: #ff2d78 !important;
+        }
+
+        .lg-actions .lg-next,
+        .lg-actions .lg-prev {
+            background-color: #ff2d78 !important;
+        }
+
+        .lg-sub-html h4 {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+        }
+
+        .lg-sub-html p {
+            font-size: 0.9rem;
+            max-width: 520px;
+            margin: 0.5rem auto 0;
+        }
     </style>
 </head>
 
@@ -492,14 +616,8 @@
 
     <!-- Global Nav -->
     <nav>
-        <div class="nav-top">
-            <div class="logo"></div>
-            <div class="search-wrapper">
-                <input type="search" class="search-bar" placeholder="Search mythical beings...">
-            </div>
-            <button class="menu-toggle" onclick="document.getElementById('nav-links').classList.toggle('open')">
-                <i data-lucide="menu"></i>
-            </button>
+        <div class="nav-logo">
+            <img src="images/favicon_io/apple-touch-icon.png" alt="Logo">
         </div>
         <div class="nav-links" id="nav-links">
             <a onclick="navTo('home')" class="active" id="link-home">Home</a>
@@ -509,6 +627,12 @@
             <a onclick="navTo('there')" id="link-there">There</a>
             <a onclick="navTo('about')" id="link-about">About</a>
         </div>
+        <div class="search-wrapper">
+            <input type="search" class="search-bar" placeholder="Search mythical beings...">
+        </div>
+        <button class="menu-toggle" onclick="document.getElementById('nav-links').classList.toggle('open')">
+            <i data-lucide="menu"></i>
+        </button>
     </nav>
 
     <!-- HOME PAGE -->
@@ -518,8 +642,10 @@
             <h1 class="section-title display">What do we offer</h1>
             <div class="home-grid">
                 <article class="card card-large">
-                    <img src="lucid-origin_a_cinematic_photo_of_A_breathtaking_mythical_creatures_emerging_from_ancient_tem-0.jpg"
-                        alt="Beings of Legend">
+                    <div class="img-wrapper" style="aspect-ratio:16/9;">
+                        <img src="images/lucid-origin_a_cinematic_photo_of_A_breathtaking_mythical_creatures_emerging_from_ancient_tem-0.jpg"
+                            alt="Beings of Legend">
+                    </div>
                     <div class="card-content">
                         <h2 class="display">Beings of Legend</h2>
                         <p>Step into a realm where myths breathe and legends walk. We offer a curated selection of the
@@ -531,8 +657,10 @@
                     </div>
                 </article>
                 <article class="card card-small">
-                    <img src="lucid-origin_a_cinematic_photo_of_A_colossal_mythical_fire_deity_made_of_living_flame_and_mol-0.jpg"
-                        alt="Magical Realm">
+                    <div class="img-wrapper" style="aspect-ratio:4/3;">
+                        <img src="images/lucid-origin_a_cinematic_photo_of_A_colossal_mythical_fire_deity_made_of_living_flame_and_mol-0.jpg"
+                            alt="Magical Realm">
+                    </div>
                     <div class="card-content">
                         <h3 class="display" style="font-size: 1.2rem;">Unmatched Rarity</h3>
                         <p
@@ -586,7 +714,7 @@
                 <div class="product-grid">
                     <article class="card">
                         <div class="product-img-container">
-                            <img src="lucid-origin_a_cinematic_photo_of_A_majestic_silver-white_unicorn_standing_in_an_enchanted_mo-0.jpg"
+                            <img src="images/lucid-origin_a_cinematic_photo_of_A_majestic_silver-white_unicorn_standing_in_an_enchanted_mo-0.jpg"
                                 alt="Unicorn">
                         </div>
                         <div class="product-info">
@@ -598,7 +726,7 @@
                     </article>
                     <article class="card">
                         <div class="product-img-container">
-                            <img src="lucid-origin_a_cinematic_photo_of_A_colossal_dark_kraken_rising_from_black_abyssal_ocean_dept-0.jpg"
+                            <img src="images/lucid-origin_a_cinematic_photo_of_A_colossal_dark_kraken_rising_from_black_abyssal_ocean_dept-0.jpg"
                                 alt="Kraken">
                         </div>
                         <div class="product-info">
@@ -610,7 +738,7 @@
                     </article>
                     <article class="card">
                         <div class="product-img-container">
-                            <img src="lucid-origin_a_cinematic_photo_of_A_noble_griffin_perched_on_a_mountain_peak_fortress_wall_li-0.jpg"
+                            <img src="images/lucid-origin_a_cinematic_photo_of_A_noble_griffin_perched_on_a_mountain_peak_fortress_wall_li-0.jpg"
                                 alt="Griffin">
                         </div>
                         <div class="product-info">
@@ -622,7 +750,7 @@
                     </article>
                     <article class="card">
                         <div class="product-img-container">
-                            <img src="ChatGPT Image 13. 5. 2026 09_32_15.png" alt="Cerberus">
+                            <img src="images/ChatGPT_Image_13__5__2026_09_32_15.png" alt="Cerberus">
                         </div>
                         <div class="product-info">
                             <h3 class="product-title display">Cerberus Pup</h3>
@@ -633,7 +761,7 @@
                     </article>
                     <article class="card">
                         <div class="product-img-container">
-                            <img src="lucid-origin_a_cinematic_photo_of_A_fearsome_chimera_creature_with_a_bronze_lion_body_goat_he-0.jpg"
+                            <img src="images/lucid-origin_a_cinematic_photo_of_A_fearsome_chimera_creature_with_a_bronze_lion_body_goat_he-0.jpg"
                                 alt="Chimera">
                         </div>
                         <div class="product-info">
@@ -645,7 +773,7 @@
                     </article>
                     <article class="card">
                         <div class="product-img-container">
-                            <img src="lucid-origin_a_cinematic_photo_of_A_massive_basilisk_serpent_king_coiled_around_a_stone_thron-0.jpg"
+                            <img src="images/lucid-origin_a_cinematic_photo_of_A_massive_basilisk_serpent_king_coiled_around_a_stone_thron-0.jpg"
                                 alt="Basilisk">
                         </div>
                         <div class="product-info">
@@ -711,22 +839,88 @@
     <main id="page-about" class="page-section">
         <div class="breadcrumb-band">/About</div>
         <div class="container">
-            <div class="home-grid" style="grid-template-columns: 1fr;">
-                <article class="card card-large">
-                    <img src="https://source.unsplash.com/featured/?mythical" alt="Mythical Realm"
-                        style="height: 500px;">
-                    <div class="card-content">
-                        <h2 class="display">About Our Bestiary</h2>
-                        <p>Founded in the primordial age, our bestiary has been the premier provider of mythical and
-                            legendary companions across the realms. We believe that the bond between a mortal and a
-                            magical being transcends time.</p>
-                        <p style="margin-top: 1rem;">Our facilities span across dimensions, ensuring that every
-                            creature—from the smallest pixie to the most colossal leviathan—is raised in environments
-                            that perfectly mimic their natural, magical habitats. We work closely with druids, magi, and
-                            mythical handlers to guarantee the well-being of all our entities.</p>
-                    </div>
-                </article>
-            </div>
+            <!-- About hero — full-width card -->
+            <article class="card card-large">
+                <div class="img-wrapper" style="aspect-ratio:16/9;">
+                    <img src="images/lucid-origin_a_cinematic_photo_of_A_breathtaking_mythical_creatures_emerging_from_ancient_tem-0.jpg"
+                        alt="Mythical Realm">
+                </div>
+                <div class="card-content">
+                    <h2 class="display">About Our Bestiary</h2>
+                    <p>Founded in the primordial age, our bestiary has been the premier provider of mythical and
+                        legendary companions across the realms. We believe that the bond between a mortal and a
+                        magical being transcends time.</p>
+                    <p style="margin-top: 1rem;">Our facilities span across dimensions, ensuring that every
+                        creature—from the smallest pixie to the most colossal leviathan—is raised in environments
+                        that perfectly mimic their natural, magical habitats. We work closely with druids, magi, and
+                        mythical handlers to guarantee the well-being of all our entities.</p>
+                </div>
+            </article>
+
+            <!-- Gallery — Bytosti které nabízíme -->
+            <section class="gallery-section">
+                <h2 class="section-title gallery-title display">Bytosti které nabízíme</h2>
+                <div class="creature-grid" id="creature-gallery">
+
+                    <!-- 1: Silver Unicorn -->
+                    <a href="images/lucid-origin_a_cinematic_photo_of_A_majestic_silver-white_unicorn_standing_in_an_enchanted_mo-0.jpg"
+                        data-lg-size="1200-900"
+                        data-sub-html="&lt;h4&gt;Silver Unicorn&lt;/h4&gt;&lt;p&gt;Čistá bytost lesů, jejíž roh má léčivé schopnosti. Zjeví se pouze těm s čistým srdcem.&lt;/p&gt;">
+                        <div class="img-wrapper" style="aspect-ratio:4/3;">
+                            <img src="images/lucid-origin_a_cinematic_photo_of_A_majestic_silver-white_unicorn_standing_in_an_enchanted_mo-0.jpg"
+                                alt="Silver Unicorn">
+                        </div>
+                    </a>
+
+                    <!-- 2: Abyssal Kraken -->
+                    <a href="images/lucid-origin_a_cinematic_photo_of_A_colossal_dark_kraken_rising_from_black_abyssal_ocean_dept-0.jpg"
+                        data-lg-size="1200-900"
+                        data-sub-html="&lt;h4&gt;Abyssal Kraken&lt;/h4&gt;&lt;p&gt;Obří mořský démon s chapadly schopnými potopit celé loďstvo. Bdí v bezedných hlubinách oceánu.&lt;/p&gt;">
+                        <div class="img-wrapper" style="aspect-ratio:4/3;">
+                            <img src="images/lucid-origin_a_cinematic_photo_of_A_colossal_dark_kraken_rising_from_black_abyssal_ocean_dept-0.jpg"
+                                alt="Abyssal Kraken">
+                        </div>
+                    </a>
+
+                    <!-- 3: Royal Griffin -->
+                    <a href="images/lucid-origin_a_cinematic_photo_of_A_noble_griffin_perched_on_a_mountain_peak_fortress_wall_li-0.jpg"
+                        data-lg-size="1200-900"
+                        data-sub-html="&lt;h4&gt;Royal Griffin&lt;/h4&gt;&lt;p&gt;Pán nebes i pevniny — tělo lva, křídla orla. Věrný pouze svému rytíři, smrtelně nebezpečný ostatním.&lt;/p&gt;">
+                        <div class="img-wrapper" style="aspect-ratio:4/3;">
+                            <img src="images/lucid-origin_a_cinematic_photo_of_A_noble_griffin_perched_on_a_mountain_peak_fortress_wall_li-0.jpg"
+                                alt="Royal Griffin">
+                        </div>
+                    </a>
+
+                    <!-- 4: Cerberus Pup -->
+                    <a href="images/ChatGPT_Image_13__5__2026_09_32_15.png" data-lg-size="1200-900"
+                        data-sub-html="&lt;h4&gt;Cerberus Pup&lt;/h4&gt;&lt;p&gt;Trojhlavý strážce podsvětí. I jako štěně dokáže odradit nežádoucí návštěvníky svým trojitým vrčením.&lt;/p&gt;">
+                        <div class="img-wrapper" style="aspect-ratio:4/3;">
+                            <img src="images/ChatGPT_Image_13__5__2026_09_32_15.png" alt="Cerberus Pup">
+                        </div>
+                    </a>
+
+                    <!-- 5: Bronze Chimera -->
+                    <a href="images/lucid-origin_a_cinematic_photo_of_A_fearsome_chimera_creature_with_a_bronze_lion_body_goat_he-0.jpg"
+                        data-lg-size="1200-900"
+                        data-sub-html="&lt;h4&gt;Bronze Chimera&lt;/h4&gt;&lt;p&gt;Tvor složený ze tří šelem — lev, koza, had. Dýchá oheň a přináší zkázu všemu, co jí stojí v cestě.&lt;/p&gt;">
+                        <div class="img-wrapper" style="aspect-ratio:4/3;">
+                            <img src="images/lucid-origin_a_cinematic_photo_of_A_fearsome_chimera_creature_with_a_bronze_lion_body_goat_he-0.jpg"
+                                alt="Bronze Chimera">
+                        </div>
+                    </a>
+
+                    <!-- 6: Emerald Basilisk -->
+                    <a href="images/lucid-origin_a_cinematic_photo_of_A_massive_basilisk_serpent_king_coiled_around_a_stone_thron-0.jpg"
+                        data-lg-size="1200-900"
+                        data-sub-html="&lt;h4&gt;Emerald Basilisk&lt;/h4&gt;&lt;p&gt;Král hadů, jehož pohled zabíjí na místě. Jediný způsob jak ho porazit — jeho vlastní odraz.&lt;/p&gt;">
+                        <div class="img-wrapper" style="aspect-ratio:4/3;">
+                            <img src="images/lucid-origin_a_cinematic_photo_of_A_massive_basilisk_serpent_king_coiled_around_a_stone_thron-0.jpg"
+                                alt="Emerald Basilisk">
+                        </div>
+                    </a>
+                </div>
+            </section>
         </div>
     </main>
 
@@ -753,6 +947,14 @@
                 navLinks.classList.remove('open');
             }
         }
+
+        // LightGallery — creature gallery on About page
+        lightGallery(document.getElementById('creature-gallery'), {
+            plugins: [lgZoom, lgThumbnail],
+            speed: 400,
+            thumbnail: true,
+            subHtmlSelectorRelative: false
+        });
     </script>
 </body>
 
